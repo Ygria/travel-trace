@@ -1,10 +1,15 @@
-import Image from "next/image";
 "use client"
+import Image from "next/image";
+
 import * as echarts from "echarts"
 import 'echarts-gl';
-import { useRef } from "react";
+import {Plus} from "lucide-react"
+import { Input } from "@/components/ui/input"
+
 import ReactEcharts from "echarts-for-react"
 export default function Home() {
+
+    const locations = []
 
     var locationLists = [
         { name: "合肥", lng_lat: [117.23,31.82], active: 1 },
@@ -185,7 +190,7 @@ export default function Home() {
             value: item.lng_lat,
         });
     });
-    const chartDom = useRef()
+
     // const myecharts = echarts.init(chartDom.current);
     const options = {
         backgroundColor: "#000",
@@ -241,8 +246,8 @@ export default function Home() {
   return (
     <main className="flex min-h-screen  items-center justify-between ">
         <div className = "p-24">
-            定义你的旅游路线：
-
+            定义你的旅游路线：<Plus></Plus>
+            <Input placeholder="输入地点" />
         </div>
         <ReactEcharts
           option={options}
