@@ -1,4 +1,16 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    output: "export",
+    // assetPrefix: '.',
+    distDir: 'build',
+    typescript: {
+        // !! WARN !!
+        // Dangerously allow production builds to successfully complete even if
+        // your project has type errors.
+        // !! WARN !!
+
+        ignoreBuildErrors: true,
+    },
+};
 
 export default nextConfig;

@@ -323,7 +323,8 @@ export default function Home() {
            </div>
 
             <span className = "mt-2">
-                拖动到地点到虚线框内，来形成您的路线图吧！
+                拖动地点到虚线框内，来形成您的路线图吧！
+
             </span>
 
             <div className = "mt-2 flex flex-col ">
