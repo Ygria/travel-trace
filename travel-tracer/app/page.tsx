@@ -232,6 +232,7 @@ export default function Home() {
 
     const handleChange = (e:ChangeEvent<HTMLInputElement>)=>{
         setValue(e.target.value);
+
     }
 
     const dic = {
@@ -255,6 +256,8 @@ export default function Home() {
             lng_lat: dic[value], active: 1
 
         }])
+        // 将值设为空
+        setValue("")
 
 
     }
@@ -282,8 +285,8 @@ export default function Home() {
         for(let index = 1; index < data.length;index++){
             updatedLineData.push(
                 {
-                    "from": data[index  -  1].name,
-                    "to": data[index].name
+                    "from": data[index  -  1],
+                    "to": data[index]
                 }
             )
 
@@ -310,7 +313,7 @@ export default function Home() {
             <span className = "mb-2">
                 您去过……
             </span>
-            <ul className="flex ">
+            <ul className="flex mt-2">
                 {locations?.map((loc) => (
                     <li key = {loc.name}>
                         <Location name={loc.name} />
@@ -319,7 +322,7 @@ export default function Home() {
             </ul>
             <div className="flex w-full max-w-sm items-center space-x-2 mb-4" >
                 <Input placeholder="输入地点" onChange={handleChange} value = {value}/>
-                <Button type="submit" onClick={onClick}>Subscribe</Button>
+                <Button type="submit" onClick={onClick}>提交</Button>
            </div>
 
             <span className = "mt-2">

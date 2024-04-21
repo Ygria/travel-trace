@@ -49,22 +49,22 @@ export const LineCollection = ({updateData} : LineCollectionProp)=>{
 
 
                 {   lineData.length == 0 &&  <MapPinned></MapPinned>}
-                <Reorder.Group values={lineData} onReorder = {setLineData} axis="x" >
+
         
                 {
                     lineData.map((loc,index)=>(
-                        <Reorder.Item value={loc} key = {loc.nam}>
+
                         <>
 
-                            <span className = "mr-2">{loc.name}</span>
+                            <span className = "mr-2" key = {loc}>{loc}</span>
 
                             {index != lineData.length - 1 && <ArrowBigRight />
                             }
                             </>
-                        </Reorder.Item>
+
                     ))
                 }
-                    </Reorder.Group>
+
 
                 {isOver && !canDrop && <Overlay type={OverlayType.IllegalMoveHover} />}
                 {!isOver && canDrop && <Overlay type={OverlayType.PossibleMove} />}
