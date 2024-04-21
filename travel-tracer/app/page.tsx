@@ -14,8 +14,10 @@ import {Button} from "@/components/ui/button";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import {LineCollection} from "@/app/components/line-collection";
+import {useQuery} from "convex/react";
+import {api} from "@/convex/_generated/api"
 
-
+import { Badge } from "@/components/ui/badge"
 export default function Home() {
 
 
@@ -231,8 +233,8 @@ export default function Home() {
     }
 
     const handleChange = (e:ChangeEvent<HTMLInputElement>)=>{
+        e.preventDefault()
         setValue(e.target.value);
-
     }
 
     const dic = {
@@ -243,23 +245,25 @@ export default function Home() {
         "南昌":[115.86, 28.68],
         "北京":[116.40,39.90],
         "上海":[121.47,31.23]
-
     }
-    const onClick= ()=>{
-        console.log(value)
-        if(locations.map(item=>item.name).includes(value)){
+
+    const data =  useQuery(api.locations.get, {name: value});
+    const onClickBadge= (data)=>{
+        debugger
+        console.log(data.name)
+        if(locations.map(item=>item.name).includes(data.name)){
             console.log("loc repeat!")
             return ;
         }
+
+
         setLocations([...locations,{
-            name: value,
-            lng_lat: dic[value], active: 1
+            name: data.name,
+            lng_lat: [data.lng,data.lat], active: 1
 
         }])
         // 将值设为空
         setValue("")
-
-
     }
 
 
@@ -296,12 +300,20 @@ export default function Home() {
     }
 
 
+
     const [lineCollection,setLineCollection] = useState([{}])
     const addLineCollection = () =>{
         setLineCollection([...lineCollection,{}])
 
     }
 
+
+
+    const handleClick = (e,res)=>{
+        debugger
+        console.log("click triggered!");
+        onClickBadge(res)
+    }
 
 
 
@@ -320,10 +332,23 @@ export default function Home() {
                     </li>
                 ))}
             </ul>
-            <div className="flex w-full max-w-sm items-center space-x-2 mb-4" >
+            <div className="flex flex-col w-full max-w-sm items-center space-x-2 mb-4 gap-y-4" >
                 <Input placeholder="输入地点" onChange={handleChange} value = {value}/>
-                <Button type="submit" onClick={onClick}>提交</Button>
+
+
+                {/*提交地点*/}
+
            </div>
+
+            <div >
+                    从下列候选项中选择，或新增地点：
+
+            {
+                data?.map(res => (
+                    <Button variant="outline" key = {res._id} onClick={event => handleClick(event, res)}>{res.name}</Button>
+                ))
+            }
+            </div>
 
             <span className = "mt-2">
                 拖动地点到虚线框内，来形成您的路线图吧！
