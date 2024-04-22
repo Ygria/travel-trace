@@ -18,7 +18,20 @@ import {useQuery} from "convex/react";
 import {api} from "@/convex/_generated/api"
 
 import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
+
+
+
+
+
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSeparator,
+    InputOTPSlot,
+} from "@/components/ui/input-otp"
 export default function Home() {
+
 
 
     interface LocationPoint {
@@ -161,6 +174,7 @@ export default function Home() {
     //     });
     // });
 
+   const REGEXP_LNG_IAT = "^[0-9.-]+$";
     const [options,setOptions] = useState({
         backgroundColor: "#000",
         globe: {
@@ -249,16 +263,15 @@ export default function Home() {
 
     const data =  useQuery(api.locations.get, {name: value});
     const onClickBadge= (data)=>{
-        debugger
-        console.log(data.name)
-        if(locations.map(item=>item.name).includes(data.name)){
+
+        console.log(value)
+        if(locations.map(item=>item.name).includes(value)){
             console.log("loc repeat!")
             return ;
         }
 
-
         setLocations([...locations,{
-            name: data.name,
+            name: value,
             lng_lat: [data.lng,data.lat], active: 1
 
         }])
@@ -333,22 +346,46 @@ export default function Home() {
                 ))}
             </ul>
             <div className="flex flex-col w-full max-w-sm items-center space-x-2 mb-4 gap-y-4" >
-                <Input placeholder="输入地点" onChange={handleChange} value = {value}/>
+              <Label>地点：</Label>  <Input placeholder="输入地点" onChange={handleChange} value = {value}/>
 
+                <Label>坐标（经度 -  纬度）：</Label>
+                <InputOTP maxLength={12} pattern={REGEXP_LNG_IAT}>
+                <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                    <InputOTPSlot index={6} />
+                    <InputOTPSlot index={7} />
+                    <InputOTPSlot index={8} />
+                    <InputOTPSlot index={9} />
+                    <InputOTPSlot index={10} />
+                    <InputOTPSlot index={11} />
+                </InputOTPGroup>
+            </InputOTP>
 
                 {/*提交地点*/}
 
            </div>
 
-            <div >
-                    从下列候选项中选择，或新增地点：
+            {data && data.length > 0 && <div className = "flex flex-wrap gap-x-2 gap-y-2" >
+               <div> 您可以从下列候选项中选择最接近的坐标点:</div>
 
-            {
+                {
                 data?.map(res => (
-                    <Button variant="outline" key = {res._id} onClick={event => handleClick(event, res)}>{res.name}</Button>
+                    <Badge variant="outline" key = {res._id} onClick={event => handleClick(event, res)}>
+                        {res.name } [<span className = "text-red-300">{res.lng}</span>,<span className = "text-green-800">{res.lat}</span>]
+                    </Badge>
                 ))
             }
             </div>
+            }
+
 
             <span className = "mt-2">
                 拖动地点到虚线框内，来形成您的路线图吧！
