@@ -1,18 +1,24 @@
-import {MapPin} from "lucide-react"
+import {MapPin,X,Pencil} from "lucide-react"
 import { DragPreviewImage, useDrag } from 'react-dnd'
-import {useRef} from "react";
+import {MouseEvent, MouseEventHandler, useRef, useState} from "react";
 import {ItemTypes} from "@/app/components/ItemTypes";
+import {EditLocation} from "./edit-location"
+import {useEditModal} from "@/app/store/use-edit-modal";
 interface LocationProps {
     name: string;
+    onRemove: (e:MouseEvent<HTMLButtonElement>)=>void
+
 
 }
 
 
 
-export const Location = ({name}:LocationProps) => {
+export const Location = ({name,onRemove}:LocationProps) => {
+
+    const {onOpen} = useEditModal();
 
     const ref = useRef<HTMLDivElement>(null)
-    const [{ isDragging }, drag, preview] = useDrag(
+    const [{ isDragging, }, drag, preview] = useDrag(
         () => ({
             type: ItemTypes.Location,
             item: { name } ,
@@ -26,10 +32,15 @@ export const Location = ({name}:LocationProps) => {
 
     return (
         <>
-        <div className = "flex gap-x-4 m-2" ref={drag}
+        <div className = "flex gap-x-2 m-2 relative group" ref={drag}
               style={{
                   opacity: isDragging ? 0.5 : 1,
-              }}><MapPin />{name}</div>
+              }}><MapPin />{name}
+            <button className = "opacity-0 group-hover:opacity-100" onClick={onOpen} ><Pencil size = "16"></Pencil> </button>
+            <button className = "opacity-0 group-hover:opacity-100" onClick={onRemove} ><X size = "16"></X> </button>
+        </div>
+
+            <EditLocation  />
         </>
     )
 }
