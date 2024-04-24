@@ -5,16 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a89dbcc-b9d3-4896-8041-2993cf7490d9" name="Changes" comment="+ 支持输入并提交经纬度">
-      <change afterPath="$PROJECT_DIR$/app/components/add-location.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/components/edit-location.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/store/use-edit-modal.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/components/theme.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/earth1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/earth2.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/earth3.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/earth4.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/word1.jpeg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/gaode.ts" beforeDir="false" afterPath="$PROJECT_DIR$/api/gaode.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/add-location.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/add-location.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/edit-location.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/edit-location.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/line-collection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/line-collection.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/components/location.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/location.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/store/use-edit-modal.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/store/use-edit-modal.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,10 +33,10 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2fPlCGeY4y2OtvscHH8qvLzzANp" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -42,6 +48,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Volumes/ygria/个人文件/travel-trace/travel-tracer/public",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -51,6 +58,14 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -60,6 +75,7 @@
       <option name="presentableId" value="Default" />
       <updated>1713710467004</updated>
       <workItem from="1713710478565" duration="20907000" />
+      <workItem from="1713888553623" duration="13235000" />
     </task>
     <task id="LOCAL-00001" summary="+ 调用接口，获取数据！">
       <option name="closed" value="true" />
@@ -95,5 +111,17 @@
     <MESSAGE value="+ 调用接口，获取数据！" />
     <MESSAGE value="+ 支持输入并提交经纬度" />
     <option name="LAST_COMMIT_MESSAGE" value="+ 支持输入并提交经纬度" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/app/page.tsx</url>
+          <line>141</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

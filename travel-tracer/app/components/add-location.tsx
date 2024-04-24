@@ -8,13 +8,20 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import {ChevronsUpDown, Plus} from "lucide-react"
+import {ChevronsUpDown, Plus,Search,Info} from "lucide-react"
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
 import {Input} from "@/components/ui/input";
 import {ChangeEvent, useState} from "react";
 import {useQuery} from "convex/react";
 import {api} from "@/convex/_generated/api";
 import {Badge} from "@/components/ui/badge";
+import { getGeoCode} from "./../../api/gaode"
+import {toast} from "sonner";
+import {
+    Alert,
+    AlertDescription,
+    AlertTitle,
+} from "@/components/ui/alert"
 
 interface AddLocationProps {
     onAdd : (loc)=> void
@@ -31,15 +38,21 @@ export const AddLocation = ({onAdd}: AddLocationProps)=> {
     const handleChange = (e:ChangeEvent<HTMLInputElement>)=>{
         e.preventDefault()
         setValue(e.target.value);
+        if(!e.target.value){
+            //  清空内容时，将搜索结果也存储为空！
+            setGaodeQueryResult([])
+        }
     }
 
     const queryResult =  useQuery(api.locations.get, {name: value});
+    const [gaodeQueryResult,setGaodeQueryResult] = useState([]);
 
     const handleClick = (e,res)=>{
 
         console.log("click triggered!");
         onAdd(res)
         setValue("")
+        setGaodeQueryResult([])
     }
 
     const handleAddInput = () =>{
@@ -52,6 +65,28 @@ export const AddLocation = ({onAdd}: AddLocationProps)=> {
         setValue("")
         setLat("")
         setLng("")
+    }
+
+    const searchGeoCode = () =>{
+        let queryResult = getGeoCode(value);
+        queryResult.then(res=>{
+            if(res && res.length > 0){
+                let data  = res.map(item=>{
+                    return {
+                        "name": item.formatted_address,
+                        "lng": item.location.split(",")[0],
+                        "lat": item.location.split(",")[1],
+                    }
+                })
+
+                setGaodeQueryResult(data)
+            }else{
+                setGaodeQueryResult([])
+                toast.error("未能查询到该地点！您可以通过经纬度进行查询。")
+            }
+        })
+
+
     }
 
 
@@ -69,13 +104,14 @@ export const AddLocation = ({onAdd}: AddLocationProps)=> {
                 </h4>
                 <CollapsibleTrigger asChild>
                     <Button variant="ghost" size="sm">
+                        <span className = "text-slate-400">经纬度</span>
                         <ChevronsUpDown className="h-4 w-4" />
                         <span className="sr-only">Toggle</span>
                     </Button>
                 </CollapsibleTrigger>
             </div>
-            <div className="rounded-md  px-4 py-2 font-mono text-sm shadow-sm">
-                <Input placeholder="输入地点" onChange={handleChange} value = {value}/>
+            <div className="flex  items-center rounded-md  px-4 py-2 font-mono text-sm shadow-sm">
+                <Input placeholder="输入地点" onChange={handleChange} value = {value}/> <Search className = "ml-2" onClick={searchGeoCode} />
             </div>
             <CollapsibleContent className="space-y-2">
                 <div className="px-4 py-2 font-mono text-sm shadow-sm">
@@ -124,8 +160,23 @@ export const AddLocation = ({onAdd}: AddLocationProps)=> {
 
         </Collapsible>
 
-            {queryResult && queryResult.length > 0 && <div className = "flex flex-wrap gap-x-2 gap-y-2 max-w-[600px]" >
-                <div> 您可以从下列候选项中选择最接近的坐标点:</div>
+
+
+            <div className = "flex flex-wrap gap-x-2 gap-y-2 max-w-[600px]" >
+                <Alert>
+                    <Info className="h-4 w-4" />
+
+                    <AlertDescription>
+                        从候选项中点击，或点击“经纬度”，自定义标记点。键入或点击🔍进行候选项搜索。
+                    </AlertDescription>
+                </Alert>
+                {
+                    gaodeQueryResult?.map(res => (
+                        <Badge variant="outline" key = {res.name} onClick={event => handleClick(event, res)}>
+                            {res.name }[<span className = "text-red-300">{res.lng}</span>,<span className = "text-green-800">{res.lat}</span>]
+                        </Badge>
+                    ))
+                }
 
                 {
                     queryResult?.map(res => (
@@ -135,7 +186,7 @@ export const AddLocation = ({onAdd}: AddLocationProps)=> {
                     ))
                 }
             </div>
-            }
+
         </>
     )
 }

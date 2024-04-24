@@ -5,7 +5,10 @@ import {ItemTypes} from "@/app/components/ItemTypes";
 import {EditLocation} from "./edit-location"
 import {useEditModal} from "@/app/store/use-edit-modal";
 interface LocationProps {
+    index: number
     name: string;
+    lng: string;
+    lat: string
     onRemove: (e:MouseEvent<HTMLButtonElement>)=>void
 
 
@@ -13,7 +16,7 @@ interface LocationProps {
 
 
 
-export const Location = ({name,onRemove}:LocationProps) => {
+export const Location = ({index,name,lng,lat,onRemove,}:LocationProps) => {
 
     const {onOpen} = useEditModal();
 
@@ -36,11 +39,11 @@ export const Location = ({name,onRemove}:LocationProps) => {
               style={{
                   opacity: isDragging ? 0.5 : 1,
               }}><MapPin />{name}
-            <button className = "opacity-0 group-hover:opacity-100" onClick={onOpen} ><Pencil size = "16"></Pencil> </button>
+            <button className = "opacity-0 group-hover:opacity-100" onClick={()=>onOpen(index,name,lng,lat)} ><Pencil size = "16"></Pencil> </button>
             <button className = "opacity-0 group-hover:opacity-100" onClick={onRemove} ><X size = "16"></X> </button>
         </div>
 
-            <EditLocation  />
+
         </>
     )
 }

@@ -5,7 +5,9 @@ import * as echarts from "echarts"
 import {Location } from "./components/location"
 
 import 'echarts-gl';
-import {Plus,ArrowBigRight,MapPin} from "lucide-react"
+
+
+import {Plus,Shirt,WandSparkles} from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {ChangeEvent, useEffect, useState} from "react"
 
@@ -18,6 +20,8 @@ import {useQuery} from "convex/react";
 import {api} from "@/convex/_generated/api"
 
 import {AddLocation} from "./components/add-location"
+import {EditLocation} from "@/app/components/edit-location";
+import {Theme} from "@/app/components/theme";
 
 
 export default function Home() {
@@ -96,13 +100,14 @@ export default function Home() {
         },
     ]
 
-   const REGEXP_LNG_IAT = "^[0-9.-]+$";
+    const REGEXP_LNG_IAT = "^[0-9.-]+$";
     const [options,setOptions] = useState({
         backgroundColor: "#000",
         globe: {
-            baseTexture:"https://cdn.jsdelivr.net/gh/Ygria/Pictures@main/world.jpg", // 地球的纹理
+            // baseTexture:"https://cdn.jsdelivr.net/gh/Ygria/Pictures@main/world.jpg", // 地球的纹理
             // baseTexture:"https://raw.githubusercontent.com/Ygria/Pictures/main/2261234821.jpg", // 地球的纹理
             // baseTexture:"https://pictures-1315245396.cos.ap-nanjing.myqcloud.com/2261234821.jpg", // 地球的纹理
+            baseTexture:"/earth1.jpg",
             shading: "lambert",
             atmosphere: {
                 // 不需要大气光圈去掉即
@@ -114,10 +119,10 @@ export default function Home() {
             },
             light: {
                 ambient: {
-                    intensity: 1.3, // 全局的环境光设置
+                    intensity: 1, // 全局的环境光设置
                 },
                 main: {
-                    intensity: 1.5, // 场景主光源设置
+                    intensity: 1, // 场景主光源设置
                 },
             },
         },
@@ -197,6 +202,14 @@ export default function Home() {
 
 
 
+    const [customTheme,setCustomTheme] = useState({})
+
+    const onSelectTheme = (data) =>{
+        setCustomTheme(data)
+    }
+
+
+
     useEffect(() => {
        let series = initSeries;
         series[0].data = normalData(lines);
@@ -209,14 +222,16 @@ export default function Home() {
         });
         setOptions({
             ...options,
+            ...customTheme,
             series: series
         })
 
-    }, [locations,lines]);
+    }, [locations,lines,customTheme]);
 
-    const onUpdateData = (data)=>{
+    const onUpdateData = (colIndex,data)=>{
+
         let updatedLineData = []
-        for(let index = 1; index < data.length;index++){
+        for(let index = 1; index < data?.length;index++){
             updatedLineData.push(
                 {
                     "from": data[index  -  1],
@@ -245,22 +260,51 @@ export default function Home() {
         onClickBadge(res)
     }
 
+    const onEditLocation = (index: number,name: string,lng: string,lat: string) =>{
+        const nextLocations = locations.map((c, i) => {
+            if (i === index) {
+                // 递增被点击的计数器数值
+                return{
+                    name: name,
+                    lng_lat: [Number(lng),Number(lat)],
+                    active: 1
+                }
+            } else {
+                // 其余部分不发生变化
+                return c;
+            }
+        });
+
+        setLocations(nextLocations)
+
+    }
+
+
+
 
 
 
     return (
     <main className="flex min-h-screen  items-center justify-between ">
+
+
+        <EditLocation   onConfirm={onEditLocation}/>
         <DndProvider backend={HTML5Backend}>
-        <div className = "p-24 max-w-900px">
+        <div className = "p-24 max-w-900px relative">
+            <Theme onSelect = {onSelectTheme}/>
+
             <span className = "mb-2">
                 您去过……
             </span>
             <AddLocation onAdd = {onClickBadge}/>
 
             <ul className="flex mt-2">
-                {locations?.map((loc) => (
-                    <li key = {loc.name}>
-                        <Location name={loc.name}  onRemove={e => handleRemove(e,loc)}/>
+                {locations?.map((loc,index) => (
+                    <li key = {`${index}_${loc.name}`}>
+                        <Location index = {index} name={loc.name} onRemove={e => handleRemove(e, loc)} lng={loc.lng_lat[0]} lat={loc.lng_lat[1]}
+                                  onEdit={function (): void {
+                                      throw new Error("Function not implemented.");
+                                  }}/>
                     </li>
                 ))}
             </ul>
@@ -269,14 +313,15 @@ export default function Home() {
 
             </span>
 
-            <div className = "mt-2 flex flex-col ">
+            <div className = "mt-2 flex flex-col" key = "line-collections">
                 {lineCollection.map((col,index)=>(
                     <>
-                        <LineCollection key = {index} updateData={onUpdateData}></LineCollection>
+                        <LineCollection _key = {`${index}_collection`} updateData={data=>onUpdateData(index,data)}></LineCollection>
                         {index == lineCollection.length - 1 &&
-                       <Button variant="ghost"  onClick={addLineCollection}>
+                       <Button variant="ghost"  onClick={addLineCollection} key={`${index}_button`}>
                             <Plus></Plus> 新增路线
-                        </Button>}
+                        </Button>
+                        }
                     </>
                     ))
 

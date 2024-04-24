@@ -1,23 +1,25 @@
 import {create} from "zustand";
 const defaultValues = {
-    id: "",
-    title: ""
+    name: "",
+    lng: "",
+    lat: "",
+    index: -1
 };
 
 
 interface IEditModal {
     isOpen: boolean;
     initialValues: typeof defaultValues;
-    onOpen: (id: string,title: string) =>void;
+    onOpen: (index:number,name:string,lng: string,lat: string) =>void;
     onClose: () => void;
 }
 
 
 export const useEditModal = create<IEditModal>((set) =>({
     isOpen: false,
-    onOpen:(id,title)=>set({
+    onOpen:(index,name,lng,lat)=>set({
         isOpen:true,
-        initialValues: {id,title}
+        initialValues: {index,name,lng,lat}
     }),
     onClose: ()=>set({
         isOpen: false,

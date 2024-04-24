@@ -8,9 +8,10 @@ import {ArrowBigRight} from "lucide-react"
 import {Reorder} from "framer-motion";
 
 interface LineCollectionProp {
+    _key: string
     updateData: (lineData: string[]) => void;
 }
-export const LineCollection = ({updateData} : LineCollectionProp)=>{
+export const LineCollection = ({_key,updateData} : LineCollectionProp)=>{
 
 
     const [lineData,setLineData] = useState<string[]>([]);
@@ -42,7 +43,7 @@ export const LineCollection = ({updateData} : LineCollectionProp)=>{
     return (
         <>
             <div className="h-[120px] m-2 min-w-[400px] p-2 border-dashed border-2 border-i-200 flex flex-wrap items-center justify-center" ref={drop}
-
+                 key={_key}
                  style={{
                      position: 'relative',
                  }}>

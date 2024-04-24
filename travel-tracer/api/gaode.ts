@@ -1,17 +1,13 @@
 // 调用接口
 
-export const getGeoCode = async () => {
-    let result = await fetch('https://restapi.amap.com/v3/geocode/geo?',{
+export const getGeoCode = async (address: string) : Promise<[]> => {
+    let result = await fetch(`https://restapi.amap.com/v3/geocode/geo?address=${address}&key=7a7d4e15075b691a4cd4265b7f88de06`,{
         headers: {
             Accept: 'application/vnd.dpexpo.v1+json' //设置请求头
         },
         method: 'get',
     })
     let res = await result.json() //必须通过此方法才可返回数据
-    const {data: {data}} = res
-    return {
-        props: {
-            data //props值传导render函数中
-        }
-    }
+    return res.geocodes;
 }
+
