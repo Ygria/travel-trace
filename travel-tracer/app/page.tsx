@@ -1,15 +1,12 @@
 "use client"
-import Image from "next/image";
-
-import * as echarts from "echarts"
-import {Location } from "./components/location"
 
 import 'echarts-gl';
 
+import {Location } from "./components/location"
+
 
 import {Plus,Shirt,WandSparkles} from "lucide-react"
-import { Input } from "@/components/ui/input"
-import {ChangeEvent, useEffect, useState} from "react"
+import {ChangeEvent, useEffect, useRef, useState} from "react"
 
 import ReactEcharts from "echarts-for-react"
 import {Button} from "@/components/ui/button";
@@ -22,6 +19,9 @@ import {api} from "@/convex/_generated/api"
 import {AddLocation} from "./components/add-location"
 import {EditLocation} from "@/app/components/edit-location";
 import {Theme} from "@/app/components/theme";
+import {useLocationPoints} from "@/app/store/use-location-points";
+import { ScrollArea } from "@/components/ui/scroll-area"
+import {useLineCollections} from "@/app/store/use-line-collections";
 
 
 export default function Home() {
@@ -39,11 +39,26 @@ export default function Home() {
         to: string
     }
 
+    const lines = useLineCollections(s=>s.lineCollections).map(item=>{
+        let ret = [];
+
+        for(let index = 1; index < item.locIds?.length;index++){
+            ret.push(
+                {
+                    "from":  item.locIds[index  -  1],
+                    "to":  item.locIds[index]
+                }
+            )
+
+        }
+        return ret
+    })
+
 
     const [value,setValue] = useState("");
 
-    const [locations,setLocations] = useState<LocationPoint[]>([]);
-    const [lines,setLines] = useState([]);
+    const {locations,addLocation,removeLocation} = useLocationPoints();
+
     const initSeries = [
         {
             type: "lines3D",
@@ -100,7 +115,6 @@ export default function Home() {
         },
     ]
 
-    const REGEXP_LNG_IAT = "^[0-9.-]+$";
     const [options,setOptions] = useState({
         backgroundColor: "#000",
         globe: {
@@ -134,10 +148,10 @@ export default function Home() {
         const res = [];
         data.forEach((dataItem) => {
             const fromCoordItem = locations.find(
-                (item) => item.name === dataItem.from
+                (item) => item.id === dataItem.from
             );
             const toCoordItem = locations.find(
-                (item) => item.name === dataItem.to
+                (item) => item.id === dataItem.to
             );
             if (
                 (fromCoordItem && !fromCoordItem.active) ||
@@ -154,21 +168,27 @@ export default function Home() {
     }
 
     function activeData(data) {
+        debugger
         const res = [];
-        data.forEach((dataItem) => {
-            const fromCoordItem = locations.find(
-                (item) => item.name === dataItem.from
-            );
-            const toCoordItem = locations.find(
-                (item) => item.name === dataItem.to
-            );
-            const fromCoord =
-                fromCoordItem && fromCoordItem.active && fromCoordItem.lng_lat;
-            const toCoord =
-                toCoordItem && toCoordItem.active && toCoordItem.lng_lat;
-            if (fromCoord && toCoord) {
-                res.push([fromCoord, toCoord]);
-            }
+        data.forEach((arr) => {
+            arr.forEach(dataItem=>{
+                const fromCoordItem = locations.find(
+                    (item) => item.id === dataItem.from.id
+                );
+                const toCoordItem = locations.find(
+                    (item) => item.id === dataItem.to.id
+                );
+
+                const fromCoord =
+                    fromCoordItem && fromCoordItem.lng && fromCoordItem.lat;
+                const toCoord =
+                    toCoordItem && toCoordItem.lng && toCoordItem.lat;
+                if (fromCoord && toCoord) {
+                    res.push([[fromCoordItem.lng,fromCoordItem?.lat],
+                        [toCoordItem.lng,toCoordItem?.lat]]);
+                }
+            })
+
         });
         return res;
     }
@@ -178,24 +198,12 @@ export default function Home() {
         setValue(e.target.value);
     }
 
-    const data =  useQuery(api.locations.get, {name: value});
-    const onClickBadge= (data)=>{
-        console.log(data.name)
-        if(locations.map(item=>item.name).includes(data.name)){
-            console.log("loc repeat!")
-            return ;
-        }
 
-        setLocations([...locations,{
-            name: data.name,
-            lng_lat: [data.lng,data.lat], active: 1
-        }])
-
-    }
 
     const handleRemove = (e,loc)=> {
         //  todo  update lines！
-        setLocations(locations.filter(item=>item !== loc))
+
+        removeLocation(loc.id)
 
         // debugger
     }
@@ -210,14 +218,16 @@ export default function Home() {
 
 
 
+    const {lineCollections,addLineCollection} = useLineCollections()
+
     useEffect(() => {
        let series = initSeries;
         series[0].data = normalData(lines);
         series[1].data = activeData(lines);
         locations.forEach((item) => {
-            series[item.active ? 2 : 3].data.push({
+            series[2].data.push({
                 name: item.name,
-                value: item.lng_lat,
+                value: [item.lng,item.lat]
             });
         });
         setOptions({
@@ -226,114 +236,71 @@ export default function Home() {
             series: series
         })
 
-    }, [locations,lines,customTheme]);
-
-    const onUpdateData = (colIndex,data)=>{
-
-        let updatedLineData = []
-        for(let index = 1; index < data?.length;index++){
-            updatedLineData.push(
-                {
-                    "from": data[index  -  1],
-                    "to": data[index]
-                }
-            )
-
-        }
-        setLines([...lines,...updatedLineData])
-        // debugger
-    }
+    }, [locations,lineCollections,customTheme]);
 
 
 
-    const [lineCollection,setLineCollection] = useState([{}])
-    const addLineCollection = () =>{
-        setLineCollection([...lineCollection,{}])
 
-    }
+    // const [lineCollection,setLineCollection] = useState([{}])
 
-
-
-    const handleClick = (e,res)=>{
-
-        console.log("click triggered!");
-        onClickBadge(res)
-    }
-
-    const onEditLocation = (index: number,name: string,lng: string,lat: string) =>{
-        const nextLocations = locations.map((c, i) => {
-            if (i === index) {
-                // 递增被点击的计数器数值
-                return{
-                    name: name,
-                    lng_lat: [Number(lng),Number(lat)],
-                    active: 1
-                }
-            } else {
-                // 其余部分不发生变化
-                return c;
-            }
-        });
-
-        setLocations(nextLocations)
-
-    }
-
-
-
+    // const addLineCollection = () =>{
+    //     setLineCollection([...lineCollection,{}])
+    //
+    // }
 
 
 
     return (
-    <main className="flex min-h-screen  items-center justify-between ">
+    <main className="flex items-center justify-between ">
 
 
-        <EditLocation   onConfirm={onEditLocation}/>
+        <EditLocation />
         <DndProvider backend={HTML5Backend}>
-        <div className = "p-24 max-w-900px relative">
+        <div className = "max-w-1/2 h-screen relative p-12 box-border ">
             <Theme onSelect = {onSelectTheme}/>
 
-            <span className = "mb-2">
-                您去过……
-            </span>
-            <AddLocation onAdd = {onClickBadge}/>
+            <AddLocation/>
+            <ScrollArea className="h-[200px] w-[600px] rounded-md  p-4 pr-12  whitespace-nowrap ">
 
-            <ul className="flex mt-2">
                 {locations?.map((loc,index) => (
-                    <li key = {`${index}_${loc.name}`}>
-                        <Location index = {index} name={loc.name} onRemove={e => handleRemove(e, loc)} lng={loc.lng_lat[0]} lat={loc.lng_lat[1]}
-                                  onEdit={function (): void {
-                                      throw new Error("Function not implemented.");
-                                  }}/>
-                    </li>
+
+
+                        <Location key = {loc.id} id = {loc.id} name={loc.name} onRemove={e => handleRemove(e, loc)} lng={loc.lng} lat={loc.lat} />
+
                 ))}
-            </ul>
+
+            </ScrollArea>
             <span className = "mt-2">
                 拖动地点到虚线框内，来形成您的路线图吧！
 
             </span>
 
-            <div className = "mt-2 flex flex-col" key = "line-collections">
-                {lineCollection.map((col,index)=>(
+            <ScrollArea className="h-[400px] w-[600px] rounded-md  p-4 pr-12">
+                {lineCollections.map((col,index)=>(
                     <>
-                        <LineCollection _key = {`${index}_collection`} updateData={data=>onUpdateData(index,data)}></LineCollection>
-                        {index == lineCollection.length - 1 &&
-                       <Button variant="ghost"  onClick={addLineCollection} key={`${index}_button`}>
-                            <Plus></Plus> 新增路线
-                        </Button>
+                        {index == 0 &&
+                            <Button variant="ghost"  onClick={addLineCollection} key={`${index}_button`}>
+                                <Plus></Plus> 新增路线
+                            </Button>
                         }
+                        <LineCollection id = {col.id}></LineCollection>
+
                     </>
                     ))
 
             }
-            </div>
+            </ScrollArea>
 
         </div>
-        <ReactEcharts
-          option={options}
-           style={{ width: "900px", height: "900px" }}
 
-      ></ReactEcharts>
+            <ScrollArea className="flex shrink-1 h-screen">
+            <ReactEcharts
+                option={options}
+                style={{ width: "900px", height: "800px" }}
+
+            ></ReactEcharts>
+            </ScrollArea>
+
         </DndProvider>
     </main>
   );

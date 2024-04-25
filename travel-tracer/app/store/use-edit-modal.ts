@@ -3,23 +3,23 @@ const defaultValues = {
     name: "",
     lng: "",
     lat: "",
-    index: -1
+   id: ""
 };
 
 
 interface IEditModal {
     isOpen: boolean;
     initialValues: typeof defaultValues;
-    onOpen: (index:number,name:string,lng: string,lat: string) =>void;
+    onOpen: (id:string,name:string,lng: string,lat: string) =>void;
     onClose: () => void;
 }
 
 
 export const useEditModal = create<IEditModal>((set) =>({
     isOpen: false,
-    onOpen:(index,name,lng,lat)=>set({
+    onOpen:(id:string,name,lng,lat)=>set({
         isOpen:true,
-        initialValues: {index,name,lng,lat}
+        initialValues: {id,name,lng,lat}
     }),
     onClose: ()=>set({
         isOpen: false,

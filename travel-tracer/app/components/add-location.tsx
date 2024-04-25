@@ -2,6 +2,7 @@
 import * as React from "react"
 
 
+
 import { Button } from "@/components/ui/button"
 import {
     Collapsible,
@@ -16,6 +17,7 @@ import {useQuery} from "convex/react";
 import {api} from "@/convex/_generated/api";
 import {Badge} from "@/components/ui/badge";
 import { getGeoCode} from "./../../api/gaode"
+import {useLocationPoints} from "@/app/store/use-location-points";
 import {toast} from "sonner";
 import {
     Alert,
@@ -23,18 +25,17 @@ import {
     AlertTitle,
 } from "@/components/ui/alert"
 
-interface AddLocationProps {
-    onAdd : (loc)=> void
-}
 
 // 新增地点
-export const AddLocation = ({onAdd}: AddLocationProps)=> {
+export const AddLocation = ()=> {
     const [isOpen, setIsOpen] = React.useState(false)
     const REGEXP_LNG_IAT = "^[0-9.-]+$";
     const [value,setValue] = useState("");
     // 绑定经度
     const [lng, setLng] = React.useState("")
     const [lat,setLat] =   React.useState("")
+
+    const {locations,addLocation} = useLocationPoints();
     const handleChange = (e:ChangeEvent<HTMLInputElement>)=>{
         e.preventDefault()
         setValue(e.target.value);
@@ -50,7 +51,7 @@ export const AddLocation = ({onAdd}: AddLocationProps)=> {
     const handleClick = (e,res)=>{
 
         console.log("click triggered!");
-        onAdd(res)
+        addLocation(res)
         setValue("")
         setGaodeQueryResult([])
     }
@@ -61,7 +62,7 @@ export const AddLocation = ({onAdd}: AddLocationProps)=> {
             lng: lng,
             lat: lat
         }
-        onAdd(data)
+        addLocation(data)
         setValue("")
         setLat("")
         setLng("")

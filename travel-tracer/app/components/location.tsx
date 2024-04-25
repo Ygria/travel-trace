@@ -1,11 +1,10 @@
 import {MapPin,X,Pencil} from "lucide-react"
-import { DragPreviewImage, useDrag } from 'react-dnd'
-import {MouseEvent, MouseEventHandler, useRef, useState} from "react";
+import { useDrag } from 'react-dnd'
+import {MouseEvent, useRef, useState} from "react";
 import {ItemTypes} from "@/app/components/ItemTypes";
-import {EditLocation} from "./edit-location"
 import {useEditModal} from "@/app/store/use-edit-modal";
 interface LocationProps {
-    index: number
+    id: string
     name: string;
     lng: string;
     lat: string
@@ -16,7 +15,7 @@ interface LocationProps {
 
 
 
-export const Location = ({index,name,lng,lat,onRemove,}:LocationProps) => {
+export const Location = ({id,name,lng,lat,onRemove,}:LocationProps) => {
 
     const {onOpen} = useEditModal();
 
@@ -24,7 +23,7 @@ export const Location = ({index,name,lng,lat,onRemove,}:LocationProps) => {
     const [{ isDragging, }, drag, preview] = useDrag(
         () => ({
             type: ItemTypes.Location,
-            item: { name } ,
+            item: { name: name,id:id } ,
 
             collect: (monitor) => ({
                 isDragging: !!monitor.isDragging(),
@@ -39,7 +38,7 @@ export const Location = ({index,name,lng,lat,onRemove,}:LocationProps) => {
               style={{
                   opacity: isDragging ? 0.5 : 1,
               }}><MapPin />{name}
-            <button className = "opacity-0 group-hover:opacity-100" onClick={()=>onOpen(index,name,lng,lat)} ><Pencil size = "16"></Pencil> </button>
+            <button className = "opacity-0 group-hover:opacity-100" onClick={()=>onOpen(id,name,lng,lat)} ><Pencil size = "16"></Pencil> </button>
             <button className = "opacity-0 group-hover:opacity-100" onClick={onRemove} ><X size = "16"></X> </button>
         </div>
 

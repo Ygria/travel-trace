@@ -10,22 +10,28 @@ import {toast} from "sonner";
 import {useEditModal} from "@/app/store/use-edit-modal";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 import * as React from "react";
-
-interface EditLocationProps {
-    onConfirm: (index: number,name: string,lng: string,lat: string) => void
-}
+import {useLocationPoints} from "@/app/store/use-location-points";
 
 
 
-export const EditLocation = ({onConfirm}: EditLocationProps) => {
+
+export const EditLocation = () => {
     const REGEXP_LNG_IAT = "^[0-9.-]+$";
     const {isOpen,onClose,initialValues} = useEditModal();
     const [value,setValue] = useState(initialValues.name)
     const [lng,setLng] = useState(initialValues.lng)
     const [lat,setLat]  = useState(initialValues.lat)
+
+    const {locations,addLocation,editLocation} = useLocationPoints();
     const onSubmit : FormEventHandler<HTMLFormElement>= (e)=>{
         e.preventDefault();
-        onConfirm(initialValues.index,value,lng,lat)
+
+        editLocation({
+            id: initialValues.id,
+            name:value,
+            lng: lng,
+            lat: lat
+        })
         onClose();
 
     }
